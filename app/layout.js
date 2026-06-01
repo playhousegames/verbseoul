@@ -36,18 +36,26 @@ export default function RootLayout({ children }) {
             <a href="/" className="brand">
               {SITE.name}<span className="dot">.</span>
             </a>
-            <span className="nav-meta">Korean verb conjugator</span>
+            <nav className="nav">
+              <a href="/">Verbs</a>
+              <a href="/about">About</a>
+            </nav>
           </div>
         </header>
         {children}
         <footer className="footer">
           <div className="wrap">
-            <div>
-              <a href="/">{SITE.name}</a> — {SITE.tagline}
+            <div className="footer-links">
+              <a href="/">Verbs</a>
+              <a href="/about">About</a>
+              <a href="https://github.com/playhousegames/verbseoul" rel="noopener">
+                Conjugation engine source
+              </a>
             </div>
             <p className="fnote">
-              Conjugations computed with the open-source Dan Bravender algorithm.
-              Romanization is approximate and meant as a pronunciation aid.
+              {SITE.name} — {SITE.tagline} Conjugations computed with the open-source
+              Dan Bravender algorithm (AGPL-3.0). Romanization is approximate and meant
+              as a pronunciation aid.
             </p>
           </div>
         </footer>
