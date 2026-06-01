@@ -1,0 +1,165 @@
+import { notFound } from 'next/navigation';
+import { verbs } from '@/data/verbs';
+import conjugations from '@/data/conjugations.json';
+import { SITE } from '@/lib/site';
+
+export const dynamicParams = false; // only build seed verbs; 404 the rest
+
+function findVerb(slug) {
+  return verbs.find((v) => v.slug === slug) || null;
+}
+
+export function generateStaticParams() {
+  return verbs.map((v) => ({ verb: v.slug }));
+}
+
+export function generateMetadata({ params }) {
+  const v = findVerb(params.verb);
+  if (!v) return {};
+  const { grid } = conjugations[v.slug];
+  const polite = grid.find((g) => g.tenseKey === 'present' && g.level.startsWith('Polite'));
+  const title = `Conjugate ${v.hangul} (${v.slug}) — “${v.en}”`;
+  const description = `How to conjugate the Korean verb ${v.hangul} (${v.slug}), meaning “${v.en}”. Present ${polite ? polite.hangul : ''}, past, and future in casual, polite, and formal speech, with romanization.`;
+  const url = `${SITE.url}/conjugate/${v.slug}`;
+  return {
+    title,
+    description,
+    alternates: { canonical: url },
+    openGraph: { title: `${title} · ${SITE.name}`, description, url, type: 'article' },
+  };
+}
+
+export default function ConjugatePage({ params }) {
+  const v = findVerb(params.verb);
+  if (!v) notFound();
+
+  const { grid, extras } = conjugations[v.slug];
+
+  // group flat grid into tense rows × politeness columns
+  const tenses = ['Present', 'Past', 'Future'];
+  const levels = ['Casual (반말)', 'Polite (요)', 'Formal (합니다)'];
+  const cell = (tense, level) =>
+    grid.find((g) => g.tense === tense && g.level === level) || { hangul: '', romanized: '' };
+
+  const polite = cell('Present', 'Polite (요)');
+
+  // related verbs: a few neighbours for internal linking
+  const idx = verbs.findIndex((x) => x.slug === v.slug);
+  const related = [];
+  for (let d = 1; related.length < 6 && d < verbs.length; d++) {
+    if (verbs[idx - d]) related.push(verbs[idx - d]);
+    if (verbs[idx + d] && related.length < 6) related.push(verbs[idx + d]);
+  }
+
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'Verbs', item: SITE.url },
+          {
+            '@type': 'ListItem',
+            position: 2,
+            name: `Conjugate ${v.hangul}`,
+            item: `${SITE.url}/conjugate/${v.slug}`,
+          },
+        ],
+      },
+      {
+        '@type': 'WebPage',
+        name: `Conjugate ${v.hangul} (${v.slug})`,
+        inLanguage: 'en',
+        about: {
+          '@type': 'DefinedTerm',
+          name: v.hangul,
+          description: `Korean verb meaning “${v.en}”`,
+          inDefinedTermSet: 'Korean',
+        },
+      },
+    ],
+  };
+
+  return (
+    <main className="wrap">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+
+      <nav className="crumbs">
+        <a href="/">All verbs</a> &nbsp;/&nbsp; <span className="kr">{v.hangul}</span>
+      </nav>
+
+      <div className="badge rise">{v.type}</div>
+      <header className="verb-head rise">
+        <span className="big kr">{v.hangul}</span>
+        <span className="meta">
+          <span className="rom">{v.slug}</span>
+          <span className="en">“{v.en}”</span>
+        </span>
+      </header>
+
+      <p className="lede rise rise-2">
+        To say <b>{v.en}</b> politely in the present tense, use{' '}
+        <b className="kr">{polite.hangul}</b> <span className="rom">({polite.romanized})</span>.
+        Below is the full conjugation of <b className="kr">{v.hangul}</b> across the three
+        tenses and three everyday speech levels.
+      </p>
+
+      <h2 className="grid-title">Conjugation table</h2>
+      <table className="ctable">
+        <thead>
+          <tr>
+            <th>Tense</th>
+            {levels.map((l) => (
+              <th key={l}>{l}</th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {tenses.map((t) => (
+            <tr key={t}>
+              <td className="rowlabel">{t}</td>
+              {levels.map((l) => {
+                const c = cell(t, l);
+                return (
+                  <td key={l}>
+                    <div className="cell">
+                      <div className="form kr">{c.hangul || '—'}</div>
+                      {c.romanized && <div className="formrom rom">{c.romanized}</div>}
+                    </div>
+                  </td>
+                );
+              })}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      <h2 className="grid-title" style={{ marginTop: 40 }}>
+        Other useful forms
+      </h2>
+      <div className="extras">
+        {extras.map((e) => (
+          <div className="extra" key={e.label}>
+            <span className="lab">{e.label}</span> <span className="lvl">{e.level}</span>
+            <div className="form kr">{e.hangul}</div>
+            {e.romanized && <div className="formrom rom">{e.romanized}</div>}
+          </div>
+        ))}
+      </div>
+
+      <section className="related">
+        <h2 className="grid-title">More verbs to conjugate</h2>
+        <div className="related-links">
+          {related.map((r) => (
+            <a className="chip" key={r.slug} href={`/conjugate/${r.slug}`}>
+              <span className="ck kr">{r.hangul}</span> — {r.en}
+            </a>
+          ))}
+        </div>
+      </section>
+    </main>
+  );
+}

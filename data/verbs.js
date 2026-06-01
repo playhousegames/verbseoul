@@ -1,0 +1,77 @@
+// data/verbs.js — seed dictionary. Expand this file to add pages; each entry
+// generates one statically-rendered /conjugate/<slug> page at build time.
+//
+// Fields:
+//   hangul  dictionary form (must end in 다)
+//   slug    unique ASCII slug used in the URL (revised romanization)
+//   en      concise English meaning (drives the "how to say X in Korean" intent)
+//   type    grammatical class — used for filtering/teaching, not conjugation
+//   tags    optional extra search terms
+
+const verbs = [
+  { hangul: '먹다', slug: 'meokda', en: 'to eat', type: 'regular' },
+  { hangul: '가다', slug: 'gada', en: 'to go', type: 'regular' },
+  { hangul: '오다', slug: 'oda', en: 'to come', type: 'regular' },
+  { hangul: '보다', slug: 'boda', en: 'to see, to watch', type: 'regular' },
+  { hangul: '하다', slug: 'hada', en: 'to do', type: '하다 (irregular)' },
+  { hangul: '사다', slug: 'sada', en: 'to buy', type: 'regular' },
+  { hangul: '자다', slug: 'jada', en: 'to sleep', type: 'regular' },
+  { hangul: '주다', slug: 'juda', en: 'to give', type: 'regular' },
+  { hangul: '받다', slug: 'batda', en: 'to receive', type: 'regular' },
+  { hangul: '읽다', slug: 'ikda', en: 'to read', type: 'regular' },
+  { hangul: '쓰다', slug: 'sseuda', en: 'to write, to use', type: '으 irregular' },
+  { hangul: '듣다', slug: 'deutda', en: 'to listen, to hear', type: 'ㄷ irregular' },
+  { hangul: '걷다', slug: 'geotda', en: 'to walk', type: 'ㄷ irregular' },
+  { hangul: '묻다', slug: 'mutda', en: 'to ask', type: 'ㄷ irregular' },
+  { hangul: '살다', slug: 'salda', en: 'to live', type: 'ㄹ stem' },
+  { hangul: '알다', slug: 'alda', en: 'to know', type: 'ㄹ stem' },
+  { hangul: '모르다', slug: 'moreuda', en: "to not know", type: '르 irregular' },
+  { hangul: '부르다', slug: 'bureuda', en: 'to call, to sing', type: '르 irregular' },
+  { hangul: '마시다', slug: 'masida', en: 'to drink', type: 'regular' },
+  { hangul: '배우다', slug: 'baeuda', en: 'to learn', type: 'regular' },
+  { hangul: '가르치다', slug: 'gareuchida', en: 'to teach', type: 'regular' },
+  { hangul: '일하다', slug: 'ilhada', en: 'to work', type: '하다 (irregular)' },
+  { hangul: '공부하다', slug: 'gongbuhada', en: 'to study', type: '하다 (irregular)' },
+  { hangul: '사랑하다', slug: 'saranghada', en: 'to love', type: '하다 (irregular)' },
+  { hangul: '좋아하다', slug: 'joahada', en: 'to like', type: '하다 (irregular)' },
+  { hangul: '만나다', slug: 'mannada', en: 'to meet', type: 'regular' },
+  { hangul: '기다리다', slug: 'gidarida', en: 'to wait', type: 'regular' },
+  { hangul: '놀다', slug: 'nolda', en: 'to play, to hang out', type: 'ㄹ stem' },
+  { hangul: '울다', slug: 'ulda', en: 'to cry', type: 'ㄹ stem' },
+  { hangul: '웃다', slug: 'utda', en: 'to laugh, to smile', type: 'regular' },
+  { hangul: '앉다', slug: 'antda', en: 'to sit', type: 'regular' },
+  { hangul: '서다', slug: 'seoda', en: 'to stand', type: 'regular' },
+  { hangul: '눕다', slug: 'nupda', en: 'to lie down', type: 'ㅂ irregular' },
+  { hangul: '돕다', slug: 'dopda', en: 'to help', type: 'ㅂ irregular' },
+  { hangul: '춥다', slug: 'chupda', en: 'to be cold', type: 'ㅂ irregular (adj)' },
+  { hangul: '덥다', slug: 'deopda', en: 'to be hot', type: 'ㅂ irregular (adj)' },
+  { hangul: '쉽다', slug: 'swipda', en: 'to be easy', type: 'ㅂ irregular (adj)' },
+  { hangul: '어렵다', slug: 'eoryeopda', en: 'to be difficult', type: 'ㅂ irregular (adj)' },
+  { hangul: '예쁘다', slug: 'yeppeuda', en: 'to be pretty', type: '으 irregular (adj)' },
+  { hangul: '바쁘다', slug: 'bappeuda', en: 'to be busy', type: '으 irregular (adj)' },
+  { hangul: '아프다', slug: 'apeuda', en: 'to be sick, to hurt', type: '으 irregular (adj)' },
+  { hangul: '크다', slug: 'keuda', en: 'to be big', type: '으 irregular (adj)' },
+  { hangul: '나쁘다', slug: 'nappeuda', en: 'to be bad', type: '으 irregular (adj)' },
+  { hangul: '좋다', slug: 'jota', en: 'to be good', type: 'descriptive' },
+  { hangul: '맛있다', slug: 'masitda', en: 'to be delicious', type: 'descriptive' },
+  { hangul: '재미있다', slug: 'jaemiitda', en: 'to be fun, to be interesting', type: 'descriptive' },
+  { hangul: '열다', slug: 'yeolda', en: 'to open', type: 'ㄹ stem' },
+  { hangul: '닫다', slug: 'datda', en: 'to close', type: 'regular' },
+  { hangul: '팔다', slug: 'palda', en: 'to sell', type: 'ㄹ stem' },
+  { hangul: '입다', slug: 'ipda', en: 'to wear (clothes)', type: 'regular' },
+  { hangul: '벗다', slug: 'beotda', en: 'to take off (clothes)', type: 'regular' },
+  { hangul: '씻다', slug: 'ssitda', en: 'to wash', type: 'regular' },
+  { hangul: '짓다', slug: 'jitda', en: 'to build', type: 'ㅅ irregular' },
+  { hangul: '낫다', slug: 'natda', en: 'to recover, to be better', type: 'ㅅ irregular' },
+  { hangul: '만들다', slug: 'mandeulda', en: 'to make', type: 'ㄹ stem' },
+  { hangul: '찾다', slug: 'chatda', en: 'to find, to look for', type: 'regular' },
+  { hangul: '잡다', slug: 'japda', en: 'to catch, to grab', type: 'regular' },
+  { hangul: '타다', slug: 'tada', en: 'to ride', type: 'regular' },
+  { hangul: '내리다', slug: 'naerida', en: 'to get off, to descend', type: 'regular' },
+  { hangul: '들어가다', slug: 'deureogada', en: 'to enter, to go in', type: 'regular' },
+  { hangul: '나가다', slug: 'nagada', en: 'to go out', type: 'regular' },
+  { hangul: '시작하다', slug: 'sijakhada', en: 'to start, to begin', type: '하다 (irregular)' },
+  { hangul: '끝나다', slug: 'kkeutnada', en: 'to end, to finish', type: 'regular' },
+];
+
+module.exports = { verbs };
