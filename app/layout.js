@@ -1,5 +1,6 @@
 import './globals.css';
 import { SITE } from '@/lib/site';
+import { GoogleAnalytics } from '@next/third-parties/google';
 
 export const metadata = {
   metadataBase: new URL(SITE.url),
@@ -51,6 +52,7 @@ export default function RootLayout({ children }) {
           </div>
         </footer>
       </body>
+      <GoogleAnalytics gaId="G-MJNNQSGWWW" />
     </html>
   );
 }
