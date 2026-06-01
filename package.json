@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "generate": "node scripts/generate.js",
+    "expand": "node scripts/expand-verbs.js",
     "dev": "node scripts/generate.js && next dev",
     "prebuild": "node scripts/generate.js",
     "build": "next build",
