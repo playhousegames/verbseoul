@@ -302,3 +302,24 @@ h1.hero-title em { font-style: italic; color: var(--accent); }
 @media (prefers-reduced-motion: reduce) {
   .ctable td:target, .ctable tr:target td:not(.rowlabel), .extra:target { animation: none; box-shadow: inset 0 0 0 2px var(--accent); }
 }
+
+/* ---------- stem-change highlight (accent colour + underline, not colour alone) ---------- */
+mark.chg {
+  background: none; color: var(--accent);
+  text-decoration: underline; text-decoration-thickness: 2px;
+  text-underline-offset: 0.18em; text-decoration-skip-ink: none;
+}
+.chg-legend { font-size: 13px; color: var(--ink-faint); font-style: italic; margin: -4px 0 12px; }
+
+/* keep Korean words whole; on narrow screens the table scrolls inside its box
+   instead of pushing the whole page sideways */
+.ctable-scroll { overflow-x: auto; margin-bottom: 14px; -webkit-overflow-scrolling: touch; }
+.ctable-scroll .ctable { margin-bottom: 0; }
+.cell .form, .extra .form { word-break: keep-all; }
+@media (max-width: 480px) {
+  .ctable thead th { padding: 10px; }
+  .ctable thead th:first-child { width: 64px; }
+  .ctable .rowlabel { font-size: 14px; padding: 10px 8px; }
+  .cell { padding: 10px; }
+  .cell .form { font-size: 20px; }
+}
