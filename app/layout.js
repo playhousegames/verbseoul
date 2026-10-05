@@ -37,7 +37,8 @@ export default function RootLayout({ children }) {
               {SITE.name}<span className="dot">.</span>
             </a>
             <nav className="nav">
-              <a href="/">Verbs</a>
+              <a href="/">Home</a>
+              <a href="/verbs">All verbs</a>
               <a href="/about">About</a>
             </nav>
           </div>
@@ -46,7 +47,8 @@ export default function RootLayout({ children }) {
         <footer className="footer">
           <div className="wrap">
             <div className="footer-links">
-              <a href="/">Verbs</a>
+              <a href="/">Home</a>
+              <a href="/verbs">All verbs</a>
               <a href="/about">About</a>
               <a href="https://github.com/playhousegames/verbseoul" rel="noopener">
                 Conjugation engine source

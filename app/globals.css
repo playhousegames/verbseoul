@@ -170,6 +170,19 @@ h1.hero-title em { font-style: italic; color: var(--accent); }
   .cell { padding: 12px; }
   .cell .form { font-size: 22px; }
   .hero { padding: 56px 0 36px; }
+  /* top-50 drops to 2 columns: 50 ÷ 2 = 25 exact rows */
+  .top50-grid { grid-template-columns: repeat(2, 1fr); }
+  .hub-cards { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+}
+
+@media (max-width: 480px) {
+  /* At 375 px the hub cards are ~152 px wide — tighten padding */
+  .hub-card { padding: 14px 12px; }
+  .hub-card .hc-label { font-size: 24px; }
+  /* verb-grid single column so Korean + English don't overlap */
+  .verb-grid { grid-template-columns: 1fr 1fr; }
+  /* page-nav wraps; shrink buttons */
+  .page-nav a, .page-nav span { padding: 6px 10px; font-size: 14px; }
 }
 
 /* ---------- nav + footer links ---------- */
@@ -201,3 +214,66 @@ h1.hero-title em { font-style: italic; color: var(--accent); }
 .about-back { margin: 44px 0 8px; font-size: 16px; }
 .about-back a { color: var(--ink-soft); }
 .about-back a:hover { color: var(--accent); }
+
+/* ---------- RR romanization ---------- */
+.rr { font-family: var(--font-body), serif; font-style: italic; color: var(--gold); }
+.formrr { font-size: 13.5px; margin-top: 2px; }
+.rom-key { font-size: 13px; color: var(--ink-faint); font-style: italic; margin-bottom: 10px; }
+.rom-swatch { color: var(--accent-deep); }
+.rr-swatch { color: var(--gold); }
+
+/* ---------- grammar rule box ---------- */
+.rule-box {
+  background: color-mix(in srgb, var(--paper-2) 70%, transparent);
+  border-left: 3px solid var(--gold); padding: 16px 20px; border-radius: 0 4px 4px 0;
+  font-size: 16px; line-height: 1.65; color: var(--ink-soft); margin: 0 0 32px;
+  max-width: 760px;
+}
+.rule-box strong { color: var(--ink); font-weight: 600; }
+
+/* ---------- badge link ---------- */
+.badge-link { color: inherit; text-decoration: none; }
+.badge-link:hover { text-decoration: underline; }
+
+/* ---------- irregular hub page ---------- */
+.hub-intro { font-size: 19px; color: var(--ink-soft); max-width: 700px; margin: 28px 0 40px; line-height: 1.7; }
+.hub-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); }
+.hub-verb {
+  background: var(--paper-card); padding: 14px 18px; display: flex; flex-direction: column; gap: 3px;
+  transition: background 0.15s;
+}
+.hub-verb:hover { background: #fff; }
+.hub-verb .hk { font-family: var(--font-kr), serif; font-size: 24px; line-height: 1.1; }
+.hub-verb .he { color: var(--ink-soft); font-size: 14px; }
+.hub-hubs { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 48px; }
+
+/* ---------- /verbs paginated index ---------- */
+.page-nav { display: flex; gap: 12px; align-items: center; margin: 40px 0 24px; flex-wrap: wrap; }
+.page-nav a, .page-nav span {
+  border: 1px solid var(--line-strong); padding: 7px 14px; border-radius: 2px;
+  font-size: 15px; color: var(--ink-soft); transition: border-color 0.15s, color 0.15s;
+}
+.page-nav a:hover { border-color: var(--accent); color: var(--accent); }
+.page-nav .active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+/* ---------- homepage redesign ---------- */
+/* margin-top only — don't clobber the left/right: auto centering from .wrap */
+.top50-section { margin-top: 40px; }
+/* Fixed 5-column grid: 50 ÷ 5 = 10 exact rows, no empty trailing cells */
+.top50-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+}
+.hub-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 14px; margin-top: 16px; }
+.hub-card {
+  background: var(--paper-card); border: 1px solid var(--line-strong); padding: 20px 18px;
+  border-radius: 2px; transition: border-color 0.15s, box-shadow 0.15s;
+  display: flex; flex-direction: column; gap: 6px;
+}
+.hub-card:hover { border-color: var(--accent); box-shadow: var(--shadow); }
+.hub-card .hc-label { font-family: var(--font-kr), serif; font-size: 32px; line-height: 1; color: var(--accent); }
+.hub-card .hc-name { font-size: 14px; color: var(--ink-soft); }
+.hub-card .hc-count { font-size: 12px; color: var(--ink-faint); margin-top: 4px; }
