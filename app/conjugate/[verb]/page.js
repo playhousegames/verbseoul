@@ -6,6 +6,7 @@ import { isIndexable } from '@/lib/indexable';
 import { getIrregularRule } from '@/lib/irregularRules';
 import { formId } from '@/lib/forms';
 import { stemChange } from '@/lib/korean/stemChange';
+import SpeakButton from '@/components/SpeakButton';
 
 export const dynamicParams = false; // only build seed verbs; 404 the rest
 
@@ -143,7 +144,10 @@ export default function ConjugatePage({ params }) {
         )}
       </div>
       <header className="verb-head rise">
-        <span className="big kr">{v.hangul}</span>
+        <span className="big kr">
+          {v.hangul}
+          <SpeakButton text={v.hangul} />
+        </span>
         <span className="meta">
           <span className="rom">{v.slug}</span>
           <span className="en">"{v.en}"</span>
@@ -196,7 +200,10 @@ export default function ConjugatePage({ params }) {
                   return (
                     <td key={l} id={c.hangul ? formId(c) : undefined}>
                       <div className="cell">
-                        <div className="form kr">{c.hangul ? <Form verb={v.hangul} hangul={c.hangul} /> : '—'}</div>
+                        <div className="form kr">
+                          {c.hangul ? <Form verb={v.hangul} hangul={c.hangul} /> : '—'}
+                          {c.hangul && <SpeakButton text={c.hangul} />}
+                        </div>
                         {c.romanized && <div className="formrom rom">{c.romanized}</div>}
                         {c.rr && c.rr !== c.romanized && <div className="formrr rr">{c.rr}</div>}
                       </div>
@@ -218,6 +225,7 @@ export default function ConjugatePage({ params }) {
             <span className="lab">{e.label}</span> <span className="lvl">{e.level}</span>
             <div className="form kr">
               <Form verb={v.hangul} hangul={e.hangul} />
+              <SpeakButton text={e.hangul} />
             </div>
             {e.romanized && <div className="formrom rom">{e.romanized}</div>}
             {e.rr && e.rr !== e.romanized && <div className="formrr rr">{e.rr}</div>}

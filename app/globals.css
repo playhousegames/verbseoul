@@ -323,3 +323,20 @@ mark.chg {
   .cell { padding: 10px; }
   .cell .form { font-size: 20px; }
 }
+
+/* ---------- audio (Web Speech API) ---------- */
+.speak {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 26px; height: 26px; padding: 0 0 0 2px; margin-left: 8px; vertical-align: 0.15em;
+  border: 1px solid var(--line-strong); border-radius: 50%; background: var(--paper);
+  color: var(--accent-deep); cursor: pointer; flex-shrink: 0;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+  -webkit-tap-highlight-color: transparent; touch-action: manipulation;
+}
+.speak:hover, .speak:focus-visible { border-color: var(--accent); color: var(--accent); background: var(--paper-card); }
+.speak:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.speak:active { background: color-mix(in srgb, var(--accent) 14%, var(--paper-card)); }
+.verb-head .big .speak { width: 34px; height: 34px; vertical-align: 0.6em; }
+.verb-head .big .speak svg { width: 15px; height: 15px; }
+/* larger touch target without a larger visual */
+@media (pointer: coarse) { .speak { position: relative; } .speak::after { content: ''; position: absolute; inset: -9px; } }
