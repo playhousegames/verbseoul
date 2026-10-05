@@ -1,6 +1,7 @@
 import { verbs } from '@/data/verbs';
 import { isIndexable } from '@/lib/indexable';
 import { SITE } from '@/lib/site';
+import SearchBox from '@/components/SearchBox';
 
 const PAGE_SIZE = 100;
 
@@ -83,32 +84,28 @@ export default function VerbsPage({ searchParams }) {
       </h1>
       <p style={{ color: 'var(--ink-soft)', marginBottom: 24, fontSize: 16 }}>
         {sorted.length.toLocaleString()} verb{sorted.length !== 1 ? 's' : ''}
-        {q ? ` matching "${q}"` : ''} — page {page} of {totalPages}
+        {q ? ` matching "${q}"` : ''}
+        {totalPages > 0 && ` — page ${page} of ${totalPages}`}
       </p>
 
-      <form method="get" action="/verbs" style={{ marginBottom: 24 }}>
-        <input
-          className="search"
-          type="search"
-          name="q"
-          defaultValue={q}
-          placeholder={'Search — 먹다, meokda, “to eat”…'}
-          aria-label="Search Korean verbs"
-        />
-      </form>
-
-      <div className="verb-grid">
-        {pageVerbs.map((v) => (
-          <a className="verb-cell" key={v.slug} href={`/conjugate/${v.slug}`}>
-            <span className="vk kr">
-              {v.hangul}
-              <span className="arrow">→</span>
-            </span>
-            <span className="ve">{v.en.length > 40 ? v.en.slice(0, 38) + '…' : v.en}</span>
-            <span className="vt">{v.type}</span>
-          </a>
-        ))}
+      <div style={{ marginBottom: 24 }}>
+        <SearchBox defaultValue={searchParams?.q || ''} />
       </div>
+
+      {pageVerbs.length > 0 && (
+        <div className="verb-grid">
+          {pageVerbs.map((v) => (
+            <a className="verb-cell" key={v.slug} href={`/conjugate/${v.slug}`}>
+              <span className="vk kr">
+                {v.hangul}
+                <span className="arrow">→</span>
+              </span>
+              <span className="ve">{v.en.length > 40 ? v.en.slice(0, 38) + '…' : v.en}</span>
+              <span className="vt">{v.type}</span>
+            </a>
+          ))}
+        </div>
+      )}
 
       {totalPages > 1 && (
         <nav className="page-nav" aria-label="Page navigation">

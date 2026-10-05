@@ -277,3 +277,28 @@ h1.hero-title em { font-style: italic; color: var(--accent); }
 .hub-card .hc-label { font-family: var(--font-kr), serif; font-size: 32px; line-height: 1; color: var(--accent); }
 .hub-card .hc-name { font-size: 14px; color: var(--ink-soft); }
 .hub-card .hc-count { font-size: 12px; color: var(--ink-faint); margin-top: 4px; }
+
+/* ---------- reverse lookup: search result + anchor targets ---------- */
+.form-match {
+  margin: 14px 0 0; padding: 14px 18px; background: var(--paper-card);
+  border: 1px solid var(--line-strong); border-left: 3px solid var(--accent);
+  font-size: 17px; line-height: 1.55; color: var(--ink-soft);
+}
+.form-match b { color: var(--ink); font-weight: 600; font-size: 1.15em; }
+.form-match ul { margin: 6px 0 0; padding-left: 20px; }
+.form-match li { margin: 2px 0; }
+.form-match a { color: var(--accent-deep); border-bottom: 1px solid var(--line-strong); }
+.form-match a:hover { color: var(--accent); border-color: var(--accent); }
+.form-match .fm-verb { color: var(--ink); }
+.form-match .kr { white-space: nowrap; }
+
+/* cells reached via /conjugate/x#past-polite: clear the sticky bar, flash briefly */
+.ctable tr[id], .ctable td[id], .extra[id] { scroll-margin-top: 96px; }
+@keyframes target-flash {
+  0%, 35% { background-color: color-mix(in srgb, var(--accent) 16%, var(--paper-card)); box-shadow: inset 0 0 0 2px var(--accent); }
+  100% { background-color: var(--paper-card); box-shadow: inset 0 0 0 2px transparent; }
+}
+.ctable td:target, .ctable tr:target td:not(.rowlabel), .extra:target { animation: target-flash 2.4s ease-out both; }
+@media (prefers-reduced-motion: reduce) {
+  .ctable td:target, .ctable tr:target td:not(.rowlabel), .extra:target { animation: none; box-shadow: inset 0 0 0 2px var(--accent); }
+}

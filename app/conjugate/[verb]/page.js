@@ -4,6 +4,7 @@ import conjugations from '@/data/conjugations.json';
 import { SITE } from '@/lib/site';
 import { isIndexable } from '@/lib/indexable';
 import { getIrregularRule } from '@/lib/irregularRules';
+import { formId } from '@/lib/forms';
 
 export const dynamicParams = false; // only build seed verbs; 404 the rest
 
@@ -167,12 +168,12 @@ export default function ConjugatePage({ params }) {
         </thead>
         <tbody>
           {tenses.map((t) => (
-            <tr key={t}>
+            <tr key={t} id={t.toLowerCase()}>
               <td className="rowlabel">{t}</td>
               {levels.map((l) => {
                 const c = cell(t, l);
                 return (
-                  <td key={l}>
+                  <td key={l} id={c.hangul ? formId(c) : undefined}>
                     <div className="cell">
                       <div className="form kr">{c.hangul || '—'}</div>
                       {c.romanized && <div className="formrom rom">{c.romanized}</div>}
@@ -191,7 +192,7 @@ export default function ConjugatePage({ params }) {
       </h2>
       <div className="extras">
         {extras.map((e) => (
-          <div className="extra" key={e.label + e.level}>
+          <div className="extra" key={e.label + e.level} id={formId(e)}>
             <span className="lab">{e.label}</span> <span className="lvl">{e.level}</span>
             <div className="form kr">{e.hangul}</div>
             {e.romanized && <div className="formrom rom">{e.romanized}</div>}
