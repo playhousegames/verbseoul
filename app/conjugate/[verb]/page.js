@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation';
 import { verbs } from '@/data/verbs';
 import conjugations from '@/data/conjugations.json';
 import { SITE } from '@/lib/site';
+import { isIndexable } from '@/lib/indexable';
 
 export const dynamicParams = false; // only build seed verbs; 404 the rest
 
@@ -26,6 +27,7 @@ export function generateMetadata({ params }) {
     description,
     alternates: { canonical: url },
     openGraph: { title: `${title} · ${SITE.name}`, description, url, type: 'article' },
+    robots: isIndexable(v) ? undefined : { index: false, follow: true },
   };
 }
 
