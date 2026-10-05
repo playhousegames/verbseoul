@@ -103,8 +103,11 @@ h1.hero-title em { font-style: italic; color: var(--accent); }
 .verb-cell .vk { font-family: var(--font-kr), serif; font-size: 26px; line-height: 1.1; }
 .verb-cell .vk .arrow { color: var(--accent); opacity: 0; margin-left: 6px; transition: opacity 0.16s ease; font-family: var(--font-body), serif; }
 .verb-cell:hover .vk .arrow { opacity: 1; }
+/* hover-only affordance: on touch it is never shown, and its invisible box can
+   wrap after a long verb and push that card's description out of line */
+@media (hover: none) { .verb-cell .vk .arrow { display: none; } }
 .verb-cell .ve { color: var(--ink-soft); font-size: 14.5px; }
-.verb-cell .vt { color: var(--ink-faint); font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.08em; margin-top: 4px; }
+.verb-cell .vt { color: var(--ink-faint); font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.08em; margin-top: auto; padding-top: 4px; }
 
 /* ---------- conjugate page ---------- */
 .crumbs { font-size: 14px; color: var(--ink-soft); padding: 26px 0 0; }
@@ -170,15 +173,9 @@ h1.hero-title em { font-style: italic; color: var(--accent); }
   .cell { padding: 12px; }
   .cell .form { font-size: 22px; }
   .hero { padding: 56px 0 36px; }
-  /* top-50 drops to 2 columns: 50 ÷ 2 = 25 exact rows */
-  .top50-grid { grid-template-columns: repeat(2, 1fr); }
-  .hub-cards { grid-template-columns: repeat(2, 1fr); gap: 10px; }
 }
 
 @media (max-width: 480px) {
-  /* At 375 px the hub cards are ~152 px wide — tighten padding */
-  .hub-card { padding: 14px 12px; }
-  .hub-card .hc-label { font-size: 24px; }
   /* verb-grid single column so Korean + English don't overlap */
   .verb-grid { grid-template-columns: 1fr 1fr; }
   /* page-nav wraps; shrink buttons */
@@ -277,6 +274,20 @@ h1.hero-title em { font-style: italic; color: var(--accent); }
 .hub-card .hc-label { font-family: var(--font-kr), serif; font-size: 32px; line-height: 1; color: var(--accent); }
 .hub-card .hc-name { font-size: 14px; color: var(--ink-soft); }
 .hub-card .hc-count { font-size: 12px; color: var(--ink-faint); margin-top: 4px; }
+
+/* Homepage mobile overrides. These must come AFTER the base rules above:
+   same specificity, so an earlier @media block loses to them. */
+@media (max-width: 680px) {
+  /* top-50 drops to 2 columns: 50 ÷ 2 = 25 exact rows. minmax(0, …) so a long
+     word can't widen a column past the screen. */
+  .top50-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .hub-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+}
+@media (max-width: 480px) {
+  /* At 375 px the hub cards are ~152 px wide — tighten padding */
+  .hub-card { padding: 14px 12px; }
+  .hub-card .hc-label { font-size: 24px; }
+}
 
 /* ---------- reverse lookup: search result + anchor targets ---------- */
 .form-match {

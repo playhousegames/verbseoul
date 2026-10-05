@@ -7,7 +7,7 @@ const PAGE_SIZE = 100;
 
 export const metadata = {
   title: 'All Korean Verbs — Full Index',
-  description: `Browse all ${verbs.filter(isIndexable).length} Korean verbs on ${SITE.name}, alphabetically, with links to full conjugation tables.`,
+  description: `Browse all ${verbs.filter(isIndexable).length} Korean verbs on ${SITE.name}, most common first, with links to full conjugation tables.`,
   alternates: { canonical: `${SITE.url}/verbs` },
 };
 
@@ -50,13 +50,13 @@ export default function VerbsPage({ searchParams }) {
     : indexableVerbs;
 
   // When a query is present, sort by relevance rank then alphabetically within rank.
-  // Without a query, sort alphabetically.
+  // Without a query, keep seed-list order: curated, then by usage frequency.
   const sorted = q
     ? [...filtered].sort((a, b) => {
         const dr = rankVerb(a, q, enWordRe) - rankVerb(b, q, enWordRe);
         return dr !== 0 ? dr : a.en.localeCompare(b.en);
       })
-    : [...filtered].sort((a, b) => a.en.localeCompare(b.en));
+    : filtered;
 
   const page = Math.max(1, parseInt(searchParams?.page || '1', 10));
   const totalPages = Math.ceil(sorted.length / PAGE_SIZE);

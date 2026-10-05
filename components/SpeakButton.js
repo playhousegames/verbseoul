@@ -10,10 +10,18 @@ let voice = null;
 const listeners = new Set();
 let started = false;
 
+// Higher-quality voices first; then the first ko-KR voice; then any Korean voice.
+const PREFERRED = ['premium', 'enhanced', 'google'];
+
 function findVoice() {
+  const lang = (v) => v.lang.replace('_', '-').toLowerCase();
   const all = window.speechSynthesis.getVoices();
-  const ko = all.filter((v) => v.lang.replace('_', '-').toLowerCase().startsWith('ko'));
-  const next = ko.find((v) => v.localService) || ko[0] || null;
+  const koKR = all.filter((v) => lang(v) === 'ko-kr');
+  const next =
+    PREFERRED.map((word) => koKR.find((v) => v.name.toLowerCase().includes(word))).find(Boolean) ||
+    koKR[0] ||
+    all.find((v) => lang(v).startsWith('ko')) ||
+    null;
   if (next !== voice) {
     voice = next;
     listeners.forEach((l) => l());
