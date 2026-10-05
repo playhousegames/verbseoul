@@ -28,3 +28,51 @@ if (problems) {
   console.error(`Aborting: ${problems} verb(s) failed validation.`);
   process.exit(1);
 }
+
+// ─── Reverse-lookup index: conjugated form → base verb(s) + form ─────────────
+// Sharded by the form's first character so a search fetches one small file.
+// Shard shape: { v: { verbIdx: [slug, hangul, en] }, f: { key: [[verbIdx, formIdx, display?]] } }
+// `display` is only stored when the form contains a space (keys have none).
+
+const zlib = require('zlib');
+const { FORM_INDEX, formId, normalizeForm, shardOf } = require('../lib/forms');
+const { isIndexable } = require('../lib/indexable');
+
+const shards = {};
+verbs.forEach((v, vi) => {
+  const { grid, extras } = out[v.slug];
+  for (const entry of [...grid, ...extras]) {
+    const fi = FORM_INDEX[formId(entry)];
+    if (fi === undefined) throw new Error(`No form ID for ${v.slug} ${entry.label || entry.tense} ${entry.level}`);
+    const key = normalizeForm(entry.hangul);
+    if (!key) continue;
+    const shard = (shards[shardOf(key)] ||= { v: {}, f: {} });
+    shard.v[vi] = [v.slug, v.hangul, v.en.length > 60 ? v.en.slice(0, 58) + '…' : v.en];
+    const hit = [vi, fi];
+    const display = entry.hangul.replace(/[?.!]+$/, '');
+    if (display !== key) hit.push(display);
+    (shard.f[key] ||= []).push(hit);
+  }
+});
+
+// Indexable (primary) verbs first, then seed-list order (curated, then by frequency).
+const rank = (vi) => (isIndexable(verbs[vi]) ? 0 : verbs.length) + vi;
+const formsDir = path.join(__dirname, '..', 'public', 'forms');
+fs.rmSync(formsDir, { recursive: true, force: true });
+fs.mkdirSync(formsDir, { recursive: true });
+let raw = 0, gz = 0, largest = 0, keys = 0;
+for (const [name, shard] of Object.entries(shards)) {
+  for (const hits of Object.values(shard.f)) hits.sort((a, b) => rank(a[0]) - rank(b[0]));
+  keys += Object.keys(shard.f).length;
+  const json = JSON.stringify(shard);
+  const size = Buffer.byteLength(json);
+  raw += size;
+  largest = Math.max(largest, zlib.gzipSync(json).length);
+  gz += zlib.gzipSync(json).length;
+  fs.writeFileSync(path.join(formsDir, `${name}.json`), json);
+}
+const kb = (n) => (n / 1024).toFixed(0) + ' KB';
+console.log(
+  `Form index: ${keys} unique forms in ${Object.keys(shards).length} shards -> public/forms/ ` +
+    `(${kb(raw)} raw, ${kb(gz)} gzip total; largest shard ${kb(largest)} gzip)`
+);

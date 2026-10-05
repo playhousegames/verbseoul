@@ -1,5 +1,6 @@
 import { verbs } from '@/data/verbs';
 import { isIndexable } from '@/lib/indexable';
+import SearchBox from '@/components/SearchBox';
 
 const TOP_50_SLUGS = [
   'meokda','gada','oda','boda','hada','sada','jada','juda','batda','ikda',
@@ -62,16 +63,7 @@ export default function Home() {
             the whole table — with pronunciation and Revised Romanization — in one place.
           </p>
           <div className="search-row rise rise-3">
-            <form action="/verbs" method="get">
-              <input
-                className="search"
-                type="search"
-                name="q"
-                placeholder={'Search — 먹다, meokda, "to eat"…'}
-                aria-label="Search Korean verbs"
-                autoComplete="off"
-              />
-            </form>
+            <SearchBox autoComplete="off" />
           </div>
         </div>
       </section>

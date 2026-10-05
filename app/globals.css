@@ -277,3 +277,66 @@ h1.hero-title em { font-style: italic; color: var(--accent); }
 .hub-card .hc-label { font-family: var(--font-kr), serif; font-size: 32px; line-height: 1; color: var(--accent); }
 .hub-card .hc-name { font-size: 14px; color: var(--ink-soft); }
 .hub-card .hc-count { font-size: 12px; color: var(--ink-faint); margin-top: 4px; }
+
+/* ---------- reverse lookup: search result + anchor targets ---------- */
+.form-match {
+  margin: 14px 0 0; padding: 14px 18px; background: var(--paper-card);
+  border: 1px solid var(--line-strong); border-left: 3px solid var(--accent);
+  font-size: 17px; line-height: 1.55; color: var(--ink-soft);
+}
+.form-match b { color: var(--ink); font-weight: 600; font-size: 1.15em; }
+.form-match ul { margin: 6px 0 0; padding-left: 20px; }
+.form-match li { margin: 2px 0; }
+.form-match a { color: var(--accent-deep); border-bottom: 1px solid var(--line-strong); }
+.form-match a:hover { color: var(--accent); border-color: var(--accent); }
+.form-match .fm-verb { color: var(--ink); }
+.form-match .kr { white-space: nowrap; }
+
+/* cells reached via /conjugate/x#past-polite: clear the sticky bar, flash briefly */
+.ctable tr[id], .ctable td[id], .extra[id] { scroll-margin-top: 96px; }
+@keyframes target-flash {
+  0%, 35% { background-color: color-mix(in srgb, var(--accent) 16%, var(--paper-card)); box-shadow: inset 0 0 0 2px var(--accent); }
+  100% { background-color: var(--paper-card); box-shadow: inset 0 0 0 2px transparent; }
+}
+.ctable td:target, .ctable tr:target td:not(.rowlabel), .extra:target { animation: target-flash 2.4s ease-out both; }
+@media (prefers-reduced-motion: reduce) {
+  .ctable td:target, .ctable tr:target td:not(.rowlabel), .extra:target { animation: none; box-shadow: inset 0 0 0 2px var(--accent); }
+}
+
+/* ---------- stem-change highlight (accent colour + underline, not colour alone) ---------- */
+mark.chg {
+  background: none; color: var(--accent);
+  text-decoration: underline; text-decoration-thickness: 2px;
+  text-underline-offset: 0.18em; text-decoration-skip-ink: none;
+}
+.chg-legend { font-size: 13px; color: var(--ink-faint); font-style: italic; margin: -4px 0 12px; }
+
+/* keep Korean words whole; on narrow screens the table scrolls inside its box
+   instead of pushing the whole page sideways */
+.ctable-scroll { overflow-x: auto; margin-bottom: 14px; -webkit-overflow-scrolling: touch; }
+.ctable-scroll .ctable { margin-bottom: 0; }
+.cell .form, .extra .form { word-break: keep-all; }
+@media (max-width: 480px) {
+  .ctable thead th { padding: 10px; }
+  .ctable thead th:first-child { width: 64px; }
+  .ctable .rowlabel { font-size: 14px; padding: 10px 8px; }
+  .cell { padding: 10px; }
+  .cell .form { font-size: 20px; }
+}
+
+/* ---------- audio (Web Speech API) ---------- */
+.speak {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 26px; height: 26px; padding: 0 0 0 2px; margin-left: 8px; vertical-align: 0.15em;
+  border: 1px solid var(--line-strong); border-radius: 50%; background: var(--paper);
+  color: var(--accent-deep); cursor: pointer; flex-shrink: 0;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+  -webkit-tap-highlight-color: transparent; touch-action: manipulation;
+}
+.speak:hover, .speak:focus-visible { border-color: var(--accent); color: var(--accent); background: var(--paper-card); }
+.speak:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.speak:active { background: color-mix(in srgb, var(--accent) 14%, var(--paper-card)); }
+.verb-head .big .speak { width: 34px; height: 34px; vertical-align: 0.6em; }
+.verb-head .big .speak svg { width: 15px; height: 15px; }
+/* larger touch target without a larger visual */
+@media (pointer: coarse) { .speak { position: relative; } .speak::after { content: ''; position: absolute; inset: -9px; } }

@@ -4,6 +4,9 @@ import conjugations from '@/data/conjugations.json';
 import { SITE } from '@/lib/site';
 import { isIndexable } from '@/lib/indexable';
 import { getIrregularRule } from '@/lib/irregularRules';
+import { formId } from '@/lib/forms';
+import { stemChange } from '@/lib/korean/stemChange';
+import SpeakButton from '@/components/SpeakButton';
 
 export const dynamicParams = false; // only build seed verbs; 404 the rest
 
@@ -52,6 +55,19 @@ const HUB_SLUG = {
   '하다 verb (adj)':    '하다',
 };
 
+// A form with the changed stem syllable(s) marked: 춥다 → [추워]요
+function Form({ verb, hangul }) {
+  const parts = stemChange(verb, hangul);
+  if (!parts) return hangul;
+  return (
+    <>
+      {parts[0]}
+      <mark className="chg">{parts[1]}</mark>
+      {parts[2]}
+    </>
+  );
+}
+
 export default function ConjugatePage({ params }) {
   const v = findVerb(params.verb);
   if (!v) notFound();
@@ -65,6 +81,7 @@ export default function ConjugatePage({ params }) {
     grid.find((g) => g.tense === tense && g.level === level) || { hangul: '', romanized: '', rr: '' };
 
   const polite = cell('Present', 'Polite (요)');
+  const hasStemChange = [...grid, ...extras].some((f) => stemChange(v.hangul, f.hangul));
 
   // related verbs: a few neighbours for internal linking
   const idx = verbs.findIndex((x) => x.slug === v.slug);
@@ -127,7 +144,10 @@ export default function ConjugatePage({ params }) {
         )}
       </div>
       <header className="verb-head rise">
-        <span className="big kr">{v.hangul}</span>
+        <span className="big kr">
+          {v.hangul}
+          <SpeakButton text={v.hangul} />
+        </span>
         <span className="meta">
           <span className="rom">{v.slug}</span>
           <span className="en">"{v.en}"</span>
@@ -156,44 +176,57 @@ export default function ConjugatePage({ params }) {
         <span className="rom-swatch">pron.</span> = pronunciation guide &nbsp;·&nbsp;
         <span className="rr-swatch">RR</span> = Revised Romanization
       </p>
-      <table className="ctable">
-        <thead>
-          <tr>
-            <th>Tense</th>
-            {levels.map((l) => (
-              <th key={l}>{l}</th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {tenses.map((t) => (
-            <tr key={t}>
-              <td className="rowlabel">{t}</td>
-              {levels.map((l) => {
-                const c = cell(t, l);
-                return (
-                  <td key={l}>
-                    <div className="cell">
-                      <div className="form kr">{c.hangul || '—'}</div>
-                      {c.romanized && <div className="formrom rom">{c.romanized}</div>}
-                      {c.rr && c.rr !== c.romanized && <div className="formrr rr">{c.rr}</div>}
-                    </div>
-                  </td>
-                );
-              })}
+      {hasStemChange && (
+        <p className="chg-legend">
+          <mark className="chg">Highlighted</mark> = where the stem changes
+        </p>
+      )}
+      <div className="ctable-scroll">
+        <table className="ctable">
+          <thead>
+            <tr>
+              <th>Tense</th>
+              {levels.map((l) => (
+                <th key={l}>{l}</th>
+              ))}
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {tenses.map((t) => (
+              <tr key={t} id={t.toLowerCase()}>
+                <td className="rowlabel">{t}</td>
+                {levels.map((l) => {
+                  const c = cell(t, l);
+                  return (
+                    <td key={l} id={c.hangul ? formId(c) : undefined}>
+                      <div className="cell">
+                        <div className="form kr">
+                          {c.hangul ? <Form verb={v.hangul} hangul={c.hangul} /> : '—'}
+                          {c.hangul && <SpeakButton text={c.hangul} />}
+                        </div>
+                        {c.romanized && <div className="formrom rom">{c.romanized}</div>}
+                        {c.rr && c.rr !== c.romanized && <div className="formrr rr">{c.rr}</div>}
+                      </div>
+                    </td>
+                  );
+                })}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
       <h2 className="grid-title" style={{ marginTop: 40 }}>
         Other useful forms
       </h2>
       <div className="extras">
         {extras.map((e) => (
-          <div className="extra" key={e.label + e.level}>
+          <div className="extra" key={e.label + e.level} id={formId(e)}>
             <span className="lab">{e.label}</span> <span className="lvl">{e.level}</span>
-            <div className="form kr">{e.hangul}</div>
+            <div className="form kr">
+              <Form verb={v.hangul} hangul={e.hangul} />
+              <SpeakButton text={e.hangul} />
+            </div>
             {e.romanized && <div className="formrom rom">{e.romanized}</div>}
             {e.rr && e.rr !== e.romanized && <div className="formrr rr">{e.rr}</div>}
           </div>
