@@ -170,6 +170,19 @@ h1.hero-title em { font-style: italic; color: var(--accent); }
   .cell { padding: 12px; }
   .cell .form { font-size: 22px; }
   .hero { padding: 56px 0 36px; }
+  /* top-50 drops to 2 columns: 50 ÷ 2 = 25 exact rows */
+  .top50-grid { grid-template-columns: repeat(2, 1fr); }
+  .hub-cards { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+}
+
+@media (max-width: 480px) {
+  /* At 375 px the hub cards are ~152 px wide — tighten padding */
+  .hub-card { padding: 14px 12px; }
+  .hub-card .hc-label { font-size: 24px; }
+  /* verb-grid single column so Korean + English don't overlap */
+  .verb-grid { grid-template-columns: 1fr 1fr; }
+  /* page-nav wraps; shrink buttons */
+  .page-nav a, .page-nav span { padding: 6px 10px; font-size: 14px; }
 }
 
 /* ---------- nav + footer links ---------- */
@@ -244,8 +257,16 @@ h1.hero-title em { font-style: italic; color: var(--accent); }
 .page-nav .active { background: var(--accent); color: #fff; border-color: var(--accent); }
 
 /* ---------- homepage redesign ---------- */
-.top50-section { margin: 40px 0 0; }
-.top50-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); }
+/* margin-top only — don't clobber the left/right: auto centering from .wrap */
+.top50-section { margin-top: 40px; }
+/* Fixed 5-column grid: 50 ÷ 5 = 10 exact rows, no empty trailing cells */
+.top50-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+}
 .hub-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 14px; margin-top: 16px; }
 .hub-card {
   background: var(--paper-card); border: 1px solid var(--line-strong); padding: 20px 18px;

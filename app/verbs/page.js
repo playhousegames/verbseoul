@@ -10,21 +10,52 @@ export const metadata = {
   alternates: { canonical: `${SITE.url}/verbs` },
 };
 
+function escapeRe(s) {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+/** Rank a matched verb for a given query (lower = better). */
+function rankVerb(v, q, enWordRe) {
+  // Exact Korean or romanization
+  if (v.hangul === q || v.slug === q) return 0;
+  // Hangul or romanization starts with the query (strong partial romanization)
+  if (v.hangul.startsWith(q) || v.slug.startsWith(q)) return 1;
+  // Hangul contains query (Korean substring)
+  if (v.hangul.includes(q)) return 2;
+  // English word appears in primary meaning (before first comma/semicolon/paren)
+  const primary = v.en.toLowerCase().split(/[,;(]/)[0].trim();
+  if (enWordRe.test(primary)) return 3;
+  // English word appears elsewhere in definition
+  if (enWordRe.test(v.en)) return 4;
+  // Romanization substring — lowest priority (can overlap English words like ppaeatda/eat)
+  return 5;
+}
+
 export default function VerbsPage({ searchParams }) {
   const indexableVerbs = verbs.filter(isIndexable);
   const q = (searchParams?.q || '').trim().toLowerCase();
 
+  // For English definitions, require whole-word matches so "eat" doesn't
+  // surface "threaten", "treat", "repeat", etc.
+  const enWordRe = q ? new RegExp(`\\b${escapeRe(q)}\\b`, 'i') : null;
+
   const filtered = q
-    ? indexableVerbs.filter(
-        (v) =>
-          v.hangul.includes(q) ||
-          v.slug.includes(q) ||
-          v.en.toLowerCase().includes(q) ||
-          v.type.toLowerCase().includes(q)
-      )
+    ? indexableVerbs.filter((v) => {
+        // Korean/romanization: substring (users type partial syllables)
+        if (v.hangul.includes(q) || v.slug.includes(q)) return true;
+        // English: whole-word only
+        return enWordRe.test(v.en);
+      })
     : indexableVerbs;
 
-  const sorted = [...filtered].sort((a, b) => a.en.localeCompare(b.en));
+  // When a query is present, sort by relevance rank then alphabetically within rank.
+  // Without a query, sort alphabetically.
+  const sorted = q
+    ? [...filtered].sort((a, b) => {
+        const dr = rankVerb(a, q, enWordRe) - rankVerb(b, q, enWordRe);
+        return dr !== 0 ? dr : a.en.localeCompare(b.en);
+      })
+    : [...filtered].sort((a, b) => a.en.localeCompare(b.en));
 
   const page = Math.max(1, parseInt(searchParams?.page || '1', 10));
   const totalPages = Math.ceil(sorted.length / PAGE_SIZE);
