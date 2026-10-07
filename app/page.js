@@ -1,5 +1,6 @@
 import { verbs } from '@/data/verbs';
 import { isIndexable } from '@/lib/indexable';
+import { HUBS, hubPath, hubForType } from '@/lib/hubs';
 import SearchBox from '@/components/SearchBox';
 
 const TOP_50_SLUGS = [
@@ -11,42 +12,16 @@ const TOP_50_SLUGS = [
   'keuda','nappeuda','jota','masitda','jaemiitda','yeolda','datda','palda','ipda',
 ];
 
-const HUB_CARDS = [
-  { slug: 'ㅂ',      label: 'ㅂ',  name: 'ㅂ irregular',    desc: 'ㅂ→우 before vowels' },
-  { slug: 'ㄷ',      label: 'ㄷ',  name: 'ㄷ irregular',    desc: 'ㄷ→ㄹ before vowels' },
-  { slug: 'ㅅ',      label: 'ㅅ',  name: 'ㅅ irregular',    desc: 'ㅅ drops before vowels' },
-  { slug: 'ㅎ',      label: 'ㅎ',  name: 'ㅎ irregular',    desc: 'ㅎ drops + contraction' },
-  { slug: '르',      label: '르',  name: '르 irregular',    desc: '르 splits: ㄹ+ㄹ' },
-  { slug: '으',      label: '으',  name: '으 irregular',    desc: 'ㅡ drops before vowels' },
-  { slug: 'ㄹ-stem', label: 'ㄹ',  name: 'ㄹ stem',         desc: 'ㄹ drops before ㄴ/ㅂ/ㅅ' },
-  { slug: '하다',    label: '하',  name: '하다 verb',        desc: '하→해 before 아/어' },
-];
-
 export default function Home() {
   const top50 = TOP_50_SLUGS
     .map((slug) => verbs.find((v) => v.slug === slug))
     .filter(Boolean);
 
   // Count verbs per hub for display
-  const HUB_TYPES = {
-    'ㅂ':      ['ㅂ irregular', 'ㅂ irregular (adj)'],
-    'ㄷ':      ['ㄷ irregular', 'ㄷ irregular (adj)'],
-    'ㅅ':      ['ㅅ irregular', 'ㅅ irregular (adj)'],
-    'ㅎ':      ['ㅎ irregular', 'ㅎ irregular (adj)'],
-    '르':      ['르 irregular', '르 irregular (adj)'],
-    '으':      ['으 irregular', '으 irregular (adj)'],
-    'ㄹ-stem': ['ㄹ stem', 'ㄹ stem (adj)'],
-    '하다':    ['하다 verb', '하다 (irregular)', '하다 verb (adj)'],
-  };
   const hubCounts = {};
   for (const v of verbs) {
-    if (!isIndexable(v)) continue;
-    for (const [slug, types] of Object.entries(HUB_TYPES)) {
-      if (types.includes(v.type)) {
-        hubCounts[slug] = (hubCounts[slug] || 0) + 1;
-        break;
-      }
-    }
+    const hub = isIndexable(v) && hubForType(v.type);
+    if (hub) hubCounts[hub.slug] = (hubCounts[hub.slug] || 0) + 1;
   }
 
   return (
@@ -95,8 +70,8 @@ export default function Home() {
           Each hub explains the rule and lists every verb in that class.
         </p>
         <div className="hub-cards">
-          {HUB_CARDS.map((h) => (
-            <a className="hub-card" key={h.slug} href={`/irregular/${encodeURIComponent(h.slug)}`}>
+          {HUBS.map((h) => (
+            <a className="hub-card" key={h.slug} href={hubPath(h)}>
               <span className="hc-label kr">{h.label}</span>
               <span className="hc-name">{h.name}</span>
               <span className="hc-count">{(hubCounts[h.slug] || 0)} verbs · {h.desc}</span>

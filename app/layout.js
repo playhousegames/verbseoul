@@ -62,7 +62,9 @@ export default function RootLayout({ children }) {
           </div>
         </footer>
       </body>
-      <GoogleAnalytics gaId="G-MJNNQSGWWW" />
+      {/* Production only: preview deployments and local runs shouldn't count as visits.
+          VERCEL_ENV is set by Vercel at build time ('production' | 'preview' | 'development'). */}
+      {process.env.VERCEL_ENV === 'production' && <GoogleAnalytics gaId="G-MJNNQSGWWW" />}
     </html>
   );
 }

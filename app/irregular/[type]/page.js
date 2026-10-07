@@ -3,77 +3,51 @@ import { verbs } from '@/data/verbs';
 import { SITE } from '@/lib/site';
 import { IRREGULAR_RULES } from '@/lib/irregularRules';
 import { isIndexable } from '@/lib/indexable';
-
-// Map hub slug → the verb.type strings that belong to this hub
-const HUB_TYPES = {
-  'ㅂ':       ['ㅂ irregular', 'ㅂ irregular (adj)'],
-  'ㄷ':       ['ㄷ irregular', 'ㄷ irregular (adj)'],
-  'ㅅ':       ['ㅅ irregular', 'ㅅ irregular (adj)'],
-  'ㅎ':       ['ㅎ irregular', 'ㅎ irregular (adj)'],
-  '르':       ['르 irregular', '르 irregular (adj)'],
-  '으':       ['으 irregular', '으 irregular (adj)'],
-  'ㄹ-stem':  ['ㄹ stem', 'ㄹ stem (adj)'],
-  '하다':     ['하다 verb', '하다 (irregular)', '하다 verb (adj)'],
-};
-
-const HUB_META = {
-  'ㅂ':      { title: 'ㅂ-irregular verbs',     headline: 'ㅂ irregular',     ruleKey: 'ㅂ irregular' },
-  'ㄷ':      { title: 'ㄷ-irregular verbs',     headline: 'ㄷ irregular',     ruleKey: 'ㄷ irregular' },
-  'ㅅ':      { title: 'ㅅ-irregular verbs',     headline: 'ㅅ irregular',     ruleKey: 'ㅅ irregular' },
-  'ㅎ':      { title: 'ㅎ-irregular adjectives', headline: 'ㅎ irregular',    ruleKey: 'ㅎ irregular (adj)' },
-  '르':      { title: '르-irregular verbs',     headline: '르 irregular',     ruleKey: '르 irregular' },
-  '으':      { title: '으-irregular verbs',     headline: '으 irregular',     ruleKey: '으 irregular' },
-  'ㄹ-stem': { title: 'ㄹ-stem verbs',          headline: 'ㄹ stem',          ruleKey: 'ㄹ stem' },
-  '하다':    { title: '하다 verbs',             headline: '하다 verb',        ruleKey: '하다 verb' },
-};
-
-const ALL_HUB_SLUGS = Object.keys(HUB_TYPES);
+import { HUBS, hubBySlug, hubPath } from '@/lib/hubs';
 
 export const dynamicParams = false;
 
 export function generateStaticParams() {
-  return ALL_HUB_SLUGS.map((t) => ({ type: t }));
+  return HUBS.map((h) => ({ type: h.slug }));
 }
 
 export function generateMetadata({ params }) {
-  const meta = HUB_META[params.type];
+  const meta = hubBySlug(params.type);
   if (!meta) return {};
-  const url = `${SITE.url}/irregular/${encodeURIComponent(params.type)}`;
+  const url = `${SITE.url}${hubPath(meta)}`;
   return {
     title: `${meta.title} — Korean conjugation`,
-    description: `List of all ${meta.title} in Korean with conjugation tables. Learn the ${meta.headline} pattern and practice with every verb in this class.`,
+    description: `List of all ${meta.title} in Korean with conjugation tables. Learn the ${meta.name} pattern and practice with every verb in this class.`,
     alternates: { canonical: url },
     openGraph: { title: `${meta.title} · ${SITE.name}`, url, type: 'website' },
   };
 }
 
 export default function IrregularHubPage({ params }) {
-  const hubSlug = params.type;
-  const meta = HUB_META[hubSlug];
+  const meta = hubBySlug(params.type);
   if (!meta) notFound();
 
-  const types = HUB_TYPES[hubSlug];
-  const hubVerbs = verbs.filter((v) => types.includes(v.type) && isIndexable(v));
+  const hubVerbs = verbs.filter((v) => meta.types.includes(v.type) && isIndexable(v));
   const rule = IRREGULAR_RULES[meta.ruleKey];
 
   // Links to other hubs
-  const otherHubs = ALL_HUB_SLUGS.filter((s) => s !== hubSlug);
+  const otherHubs = HUBS.filter((h) => h !== meta);
 
   return (
     <main className="wrap">
       <nav className="crumbs">
         <a href="/">All verbs</a> &nbsp;/&nbsp; Irregular hubs &nbsp;/&nbsp;{' '}
-        <span className="kr">{meta.headline}</span>
+        <span className="kr">{meta.name}</span>
       </nav>
 
-      <div className="badge rise">{meta.headline}</div>
+      <div className="badge rise">{meta.name}</div>
       <h1 className="hero-sub" style={{ fontSize: 'clamp(28px,5vw,48px)', margin: '8px 0 0', fontFamily: 'var(--font-display)', letterSpacing: '-0.02em', lineHeight: 1.1 }}>
         {meta.title}
       </h1>
 
       {rule && (
         <div className="rule-box rise" style={{ marginTop: 28 }}>
-          <strong>The {meta.headline} pattern:</strong> {rule.summary}
+          <strong>The {meta.name} pattern:</strong> {rule.summary}
         </div>
       )}
 
@@ -95,9 +69,9 @@ export default function IrregularHubPage({ params }) {
       <section style={{ marginTop: 56 }}>
         <h2 className="grid-title">Other irregular verb types</h2>
         <div className="hub-hubs">
-          {otherHubs.map((s) => (
-            <a className="chip" key={s} href={`/irregular/${encodeURIComponent(s)}`}>
-              <span className="ck kr">{s}</span> irregular
+          {otherHubs.map((h) => (
+            <a className="chip" key={h.slug} href={hubPath(h)}>
+              <span className="ck kr">{h.name}</span>
             </a>
           ))}
         </div>
