@@ -5,6 +5,7 @@ import { SITE } from '@/lib/site';
 import { isIndexable } from '@/lib/indexable';
 import { getIrregularRule } from '@/lib/irregularRules';
 import { formId } from '@/lib/forms';
+import { hubForType, hubPath } from '@/lib/hubs';
 import { stemChange } from '@/lib/korean/stemChange';
 import SpeakButton from '@/components/SpeakButton';
 
@@ -34,26 +35,6 @@ export function generateMetadata({ params }) {
     robots: isIndexable(v) ? undefined : { index: false, follow: true },
   };
 }
-
-// Map verb type → irregular hub slug
-const HUB_SLUG = {
-  'ㅂ irregular':       'ㅂ',
-  'ㅂ irregular (adj)': 'ㅂ',
-  'ㄷ irregular':       'ㄷ',
-  'ㅅ irregular':       'ㅅ',
-  'ㅅ irregular (adj)': 'ㅅ',
-  'ㅎ irregular':       'ㅎ',
-  'ㅎ irregular (adj)': 'ㅎ',
-  '르 irregular':       '르',
-  '르 irregular (adj)': '르',
-  '으 irregular':       '으',
-  '으 irregular (adj)': '으',
-  'ㄹ stem':            'ㄹ-stem',
-  'ㄹ stem (adj)':      'ㄹ-stem',
-  '하다 verb':          '하다',
-  '하다 (irregular)':   '하다',
-  '하다 verb (adj)':    '하다',
-};
 
 // A form with the changed stem syllable(s) marked: 춥다 → [추워]요
 function Form({ verb, hangul }) {
@@ -92,7 +73,7 @@ export default function ConjugatePage({ params }) {
   }
 
   const rule = getIrregularRule(v.type);
-  const hubSlug = HUB_SLUG[v.type];
+  const hub = hubForType(v.type);
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -135,8 +116,8 @@ export default function ConjugatePage({ params }) {
       </nav>
 
       <div className="badge rise">
-        {hubSlug ? (
-          <a href={`/irregular/${encodeURIComponent(hubSlug)}`} className="badge-link">
+        {hub ? (
+          <a href={hubPath(hub)} className="badge-link">
             {v.type}
           </a>
         ) : (
@@ -168,6 +149,14 @@ export default function ConjugatePage({ params }) {
       {rule && (
         <div className="rule-box rise">
           <strong>Grammar note ({v.type}):</strong> {rule.summary}
+          {hub && (
+            <>
+              {' '}
+              <a href={hubPath(hub)} className="rule-link">
+                See all {hub.title} →
+              </a>
+            </>
+          )}
         </div>
       )}
 

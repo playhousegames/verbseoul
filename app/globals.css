@@ -351,3 +351,5 @@ mark.chg {
 .verb-head .big .speak svg { width: 15px; height: 15px; }
 /* larger touch target without a larger visual */
 @media (pointer: coarse) { .speak { position: relative; } .speak::after { content: ''; position: absolute; inset: -9px; } }
+.rule-link { color: var(--accent-deep); border-bottom: 1px solid var(--line-strong); white-space: nowrap; }
+.rule-link:hover { color: var(--accent); border-color: var(--accent); }
