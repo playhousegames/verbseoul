@@ -724,13 +724,13 @@ const verbContent = {
 
   dopda: {
     examples: {
-      'present-casual': ['엄마 좀 도와.', 'Help your mother out a bit.'],
+      'present-casual': ['동생이 매일 엄마 일을 도와.', 'My younger sibling helps Mom every day.'],
       'present-polite': ['저는 주말마다 부모님 가게 일을 도와요.', 'I help out at my parents’ shop every weekend.'],
       'present-formal': ['이 단체는 어려운 사람들을 돕습니다.', 'This charity helps people in need.'],
       'past-casual': ['이사할 때 누가 도왔어?', 'Who helped you move?'],
       'past-polite': ['주말에 친구 이사를 도왔어요.', 'I helped a friend move this weekend.'],
-      'past-formal': ['많은 자원봉사자들이 피해 지역을 도왔습니다.', 'Many volunteers helped the affected area.'],
-      'future-casual': ['내가 도울 거야, 걱정 마.', 'I’ll help, don’t worry.'],
+      'past-formal': ['많은 자원봉사자들이 피해 주민들을 도왔습니다.', 'Many volunteers helped the affected residents.'],
+      'future-casual': ['이번 주말에 친구 이사 도울 거야.', 'I’m going to help my friend move this weekend.'],
       'future-polite': ['시간이 되면 행사 준비를 도울 거예요.', 'If I have time, I’m going to help get the event ready.'],
       'future-formal': ['저희 팀이 끝까지 도울 겁니다.', 'Our team will help you all the way.'],
       command: ['할 수 있을 때 서로 도우세요.', 'Help each other when you can.'],
