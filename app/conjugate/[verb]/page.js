@@ -1,10 +1,11 @@
 import { notFound } from 'next/navigation';
 import { verbs } from '@/data/verbs';
+import { verbContent } from '@/data/verb-content';
 import conjugations from '@/data/conjugations.json';
 import { SITE } from '@/lib/site';
 import { isIndexable } from '@/lib/indexable';
 import { getIrregularRule } from '@/lib/irregularRules';
-import { formId } from '@/lib/forms';
+import { FORMS, FORM_INDEX, formId } from '@/lib/forms';
 import { hubForType, hubPath } from '@/lib/hubs';
 import { stemChange } from '@/lib/korean/stemChange';
 import SpeakButton from '@/components/SpeakButton';
@@ -24,8 +25,9 @@ export function generateMetadata({ params }) {
   if (!v) return {};
   const { grid } = conjugations[v.slug];
   const polite = grid.find((g) => g.tenseKey === 'present' && g.level.startsWith('Polite'));
-  const title = `Conjugate ${v.hangul} (${v.slug}) — "${v.en}"`;
-  const description = `How to conjugate the Korean verb ${v.hangul} (${v.slug}), meaning "${v.en}". Present ${polite ? polite.hangul : ''}, past, and future in casual, polite, and formal speech, with romanization.`;
+  const content = verbContent[v.slug];
+  const title = `${v.hangul} Conjugation — All Forms${content ? ' with Examples' : ''} (${v.slug}, ${v.en})`;
+  const description = `How to conjugate the Korean verb ${v.hangul} (${v.slug}), meaning "${v.en}". Present ${polite ? polite.hangul : ''}, past, and future in casual, polite, and formal speech, with romanization${content ? ', example sentences, and usage notes' : ''}.`;
   const url = `${SITE.url}/conjugate/${v.slug}`;
   return {
     title,
@@ -49,11 +51,26 @@ function Form({ verb, hangul }) {
   );
 }
 
+// An example sentence with the form it illustrates in bold.
+function Example({ sentence, form }) {
+  const i = sentence.indexOf(form);
+  if (i < 0) return sentence;
+  return (
+    <>
+      {sentence.slice(0, i)}
+      <b>{form}</b>
+      {sentence.slice(i + form.length)}
+    </>
+  );
+}
+
 export default function ConjugatePage({ params }) {
   const v = findVerb(params.verb);
   if (!v) notFound();
 
   const { grid, extras } = conjugations[v.slug];
+  const content = verbContent[v.slug];
+  const formsById = Object.fromEntries([...grid, ...extras].map((f) => [formId(f), f.hangul]));
 
   // group flat grid into tense rows × politeness columns
   const tenses = ['Present', 'Past', 'Future'];
@@ -125,14 +142,24 @@ export default function ConjugatePage({ params }) {
         )}
       </div>
       <header className="verb-head rise">
-        <span className="big kr">
-          {v.hangul}
-          <SpeakButton text={v.hangul} />
-        </span>
-        <span className="meta">
-          <span className="rom">{v.slug}</span>
-          <span className="en">"{v.en}"</span>
-        </span>
+        {/* Reads as "먹다 conjugation (meokda, to eat)"; the brackets are for
+            screen readers and search, the layout shows the parts on their own. */}
+        <h1 className="verb-h1">
+          <span className="big kr">{v.hangul}</span>{' '}
+          <span className="meta">
+            <span className="what">conjugation</span>{' '}
+            <span className="rom">
+              <span className="vh">(</span>
+              {v.slug}
+              <span className="vh">,</span>
+            </span>{' '}
+            <span className="en">
+              {v.en}
+              <span className="vh">)</span>
+            </span>
+          </span>
+        </h1>
+        <SpeakButton text={v.hangul} />
       </header>
 
       <p className="lede rise rise-2">
@@ -204,6 +231,39 @@ export default function ConjugatePage({ params }) {
           </tbody>
         </table>
       </div>
+
+      {content && (
+        <>
+          <section className="content-section">
+            <h2 className="grid-title">Example sentences</h2>
+            <ul className="examples">
+              {Object.entries(content.examples).map(([id, [ko, en]]) => (
+                <li key={id}>
+                  <a className="ex-label" href={`#${id}`}>
+                    {/* -(으)세요 is often a polite question or statement (어디 사세요?), not only a command */}
+                    {id === 'command' ? 'honorific -(으)세요' : FORMS[FORM_INDEX[id]][1]}
+                  </a>
+                  <span className="ex-ko kr">
+                    <Example sentence={ko} form={formsById[id]} />
+                    <SpeakButton text={ko} />
+                  </span>
+                  <span className="ex-en">{en}</span>
+                </li>
+              ))}
+            </ul>
+          </section>
+
+          <section className="content-section">
+            <h2 className="grid-title">How it’s used</h2>
+            <p className="content-prose">{content.usage}</p>
+          </section>
+
+          <section className="content-section">
+            <h2 className="grid-title">Common mistake</h2>
+            <p className="content-prose mistake">{content.mistake}</p>
+          </section>
+        </>
+      )}
 
       <h2 className="grid-title" style={{ marginTop: 40 }}>
         Other useful forms

@@ -7,7 +7,9 @@
 const fs = require('fs');
 const path = require('path');
 const { verbs } = require('../data/verbs');
+const { verbContent } = require('../data/verb-content');
 const { conjugate } = require('../lib/korean/engine');
+const { FORM_INDEX, formId, normalizeForm, shardOf } = require('../lib/forms');
 
 const out = {};
 let problems = 0;
@@ -29,13 +31,33 @@ if (problems) {
   process.exit(1);
 }
 
+// ─── Hand-written content: every example must contain the form it illustrates ─
+const CONTENT_FORMS = [...out.meokda.grid.map(formId), 'command'];
+const contentErrors = [];
+for (const [slug, entry] of Object.entries(verbContent)) {
+  if (!out[slug]) { contentErrors.push(`${slug}: not in data/verbs.js`); continue; }
+  const forms = Object.fromEntries(
+    [...out[slug].grid, ...out[slug].extras].map((f) => [formId(f), f.hangul])
+  );
+  for (const id of CONTENT_FORMS) {
+    const ex = entry.examples?.[id];
+    if (!ex) contentErrors.push(`${slug}: missing example for ${id}`);
+    else if (!ex[0].includes(forms[id])) contentErrors.push(`${slug} ${id}: "${ex[0]}" does not contain ${forms[id]}`);
+  }
+  if (!entry.usage || !entry.mistake) contentErrors.push(`${slug}: missing usage or mistake`);
+}
+if (contentErrors.length) {
+  console.error('verb-content.js problems:\n  ' + contentErrors.join('\n  '));
+  process.exit(1);
+}
+console.log(`Verb content OK: ${Object.keys(verbContent).length} verbs`);
+
 // ─── Reverse-lookup index: conjugated form → base verb(s) + form ─────────────
 // Sharded by the form's first character so a search fetches one small file.
 // Shard shape: { v: { verbIdx: [slug, hangul, en] }, f: { key: [[verbIdx, formIdx, display?]] } }
 // `display` is only stored when the form contains a space (keys have none).
 
 const zlib = require('zlib');
-const { FORM_INDEX, formId, normalizeForm, shardOf } = require('../lib/forms');
 const { isIndexable } = require('../lib/indexable');
 
 const shards = {};
