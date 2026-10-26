@@ -34,7 +34,10 @@ export function generateMetadata({ params }) {
     description,
     alternates: { canonical: url },
     openGraph: { title: `${title} · ${SITE.name}`, description, url, type: 'article' },
-    robots: isIndexable(v) ? undefined : { index: false, follow: true },
+    // Only verbs with hand-written content (data/verb-content.js) are indexed.
+    // Everything else stays live and crawlable but noindexed, so Google judges
+    // the site on its best pages. Adding content to a verb indexes it automatically.
+    robots: content && isIndexable(v) ? undefined : { index: false, follow: true },
   };
 }
 
@@ -81,13 +84,16 @@ export default function ConjugatePage({ params }) {
   const polite = cell('Present', 'Polite (요)');
   const hasStemChange = [...grid, ...extras].some((f) => stemChange(v.hangul, f.hangul));
 
-  // related verbs: a few neighbours for internal linking
+  // related verbs: link only to indexed (content) verbs, so every page —
+  // including the noindexed long tail — funnels crawl and link value to them.
+  // Same verb type first, then a rotating slice of the rest so links spread out.
+  const indexed = verbs.filter((x) => verbContent[x.slug] && x.slug !== v.slug);
   const idx = verbs.findIndex((x) => x.slug === v.slug);
-  const related = [];
-  for (let d = 1; related.length < 6 && d < verbs.length; d++) {
-    if (verbs[idx - d]) related.push(verbs[idx - d]);
-    if (verbs[idx + d] && related.length < 6) related.push(verbs[idx + d]);
-  }
+  const rotated = indexed.map((_, i) => indexed[(i + idx) % indexed.length]);
+  const related = [
+    ...rotated.filter((x) => x.type === v.type),
+    ...rotated.filter((x) => x.type !== v.type),
+  ].slice(0, 6);
 
   const rule = getIrregularRule(v.type);
   const hub = hubForType(v.type);
